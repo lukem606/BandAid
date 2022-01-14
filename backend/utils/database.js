@@ -5,14 +5,16 @@ const pool = new Pool({
     "postgres://heejhgdx:Bss5fJt7fUst3zzXJiwzDoZps3GjMgHl@tyke.db.elephantsql.com/heejhgdx",
 });
 
-const query = async (query, params) => {
+const query = async (query, params = null) => {
+  let response;
+
   if (params) {
-    const response = await pool.query(query, params);
-    return response;
+    response = await pool.query(query, params);
   } else {
-    const response = await pool.query(query);
-    return response;
+    response = await pool.query(query);
   }
+
+  return response;
 };
 
 const getClient = async () => {
@@ -21,6 +23,6 @@ const getClient = async () => {
 };
 
 module.exports = {
-  query: query,
-  getClient: getClient,
+  query,
+  getClient,
 };

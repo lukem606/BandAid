@@ -1,5 +1,7 @@
 const readline = require("readline");
-const db = require("./index");
+const bcrypt = require("bcryptjs");
+
+const db = require("./database");
 
 const initialiseDatabase = async () => {
   const usersTable = `
@@ -73,19 +75,38 @@ const initialiseDatabase = async () => {
 
   try {
     console.log("Creating users table");
-    const users = await db.query(usersTable);
+    await db.query(usersTable);
 
     console.log("Creating bands table");
-    const bands = await db.query(bandsTable);
+    await db.query(bandsTable);
 
     console.log("Creating events table");
-    const events = await db.query(eventsTable);
+    await db.query(eventsTable);
 
     console.log("Creating band members table");
-    const bandMembers = await db.query(bandMembersTable);
+    await db.query(bandMembersTable);
   } catch (e) {
     console.log(e);
   }
+};
+
+const seedDatabase = async () => {
+  const emailAddresses = [
+    "luke@luke.co.uk",
+    "matthew@matthew.co.uk",
+    "mark@mark.co.uk",
+    "john@john.co.uk",
+  ];
+  const passwordHash = await bcrypt.hash("passWORD1?", 10);
+
+  const usersQuery =
+    "INSERT INTO users (email, password) VALUES ($1, $2), ($3, $4), ($5, $6), ($7, $8)";
+  const usersParams = emailAddresses.reduce((previous, current) => {
+    return [...previous, current, passwordHash];
+  }, []);
+
+  console.log("Seeding user data");
+  await db.query(usersQuery, usersParams);
 };
 
 const input = readline.createInterface({
@@ -102,6 +123,7 @@ input.question(
     }
 
     await initialiseDatabase();
+    await seedDatabase();
     input.close();
   }
 );

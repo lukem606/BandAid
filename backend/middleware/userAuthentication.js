@@ -1,14 +1,35 @@
+const fs = require("fs");
+
 const userAuthentication = (req, res, next) => {
-  console.log("USER AUTH");
+  const accessToken = req.header("Authorization");
+  const refreshToken = req.cookies.__refresh_token;
 
-  res
-    .set({
-      "access-token": "token",
-    })
-    .status(200)
-    .json({ ham: "salad" });
+  try {
+    /*
+    
+    Verify access token
+    
+    If valid;
+      Generate new refresh token and add to res
+      Call next
 
-  // next();
+    If expired;
+      Verify refresh token
+
+      If valid;
+        Generate new access and refresh tokens, add to res
+        Call next
+
+      If invalid;
+        Redirect to login
+
+    If invalid;
+      Redirect to login
+
+      */
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 module.exports = userAuthentication;

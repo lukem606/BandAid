@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 
-const { registerUser, loginUser } = require("../api/user");
+const { registerUser, loginUser } = require("../../api/user");
 
 describe("/user/register", () => {
   describe("when passed valid user credentials", () => {
@@ -16,6 +16,9 @@ describe("/user/register", () => {
       service: {
         database: {
           createUser: jest.fn(),
+          getUser: jest.fn((userDetails) => {
+            return null;
+          }),
         },
       },
     };
@@ -43,6 +46,49 @@ describe("/user/register", () => {
     it("should call next", async () => {
       await registerUser(req, res, next);
       expect(next).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("when passed email that is already registered", () => {
+    const req = {
+      body: {
+        userDetails: {
+          email: "name@name.co.uk",
+          password: "passWORD1?",
+          confirmationPassword: "passWORD1?",
+          staySignedIn: true,
+        },
+      },
+      service: {
+        database: {
+          getUser: (userDetails) => {
+            return { password: "passWORD1?" };
+          },
+        },
+      },
+    };
+    const res = {};
+    const next = jest.fn();
+
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+
+    afterEach(() => {
+      res.status.mockClear();
+      res.json.mockClear();
+      next.mockClear();
+    });
+
+    it("should return a 400 status", async () => {
+      await registerUser(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(400);
+    });
+
+    it("should return json with error message", async () => {
+      await registerUser(req, res, next);
+      const json = res.json.mock.calls[0][0];
+
+      expect(json.error).toBe("This email address is already registered");
     });
   });
 
@@ -135,6 +181,48 @@ describe("/user/login", () => {
     });
   });
 
+  describe("when passed email that doesn't exist in database", () => {
+    const req = {
+      body: {
+        userDetails: {
+          email: "name@name.co.uk",
+          password: "password1?",
+          staySignedIn: true,
+        },
+      },
+      service: {
+        database: {
+          getUser: jest.fn((userDetails) => {
+            return null;
+          }),
+        },
+      },
+    };
+    const res = {};
+    const next = jest.fn();
+
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+
+    afterEach(() => {
+      res.status.mockClear();
+      res.json.mockClear();
+      next.mockClear();
+    });
+
+    it("should return a 400 status", async () => {
+      await loginUser(req, res, next);
+      expect(res.status).toHaveBeenCalledWith(400);
+    });
+
+    it("should return json with error message", async () => {
+      await loginUser(req, res, next);
+      const json = res.json.mock.calls[0][0];
+
+      expect(json.error).toBe("Email address is not registered");
+    });
+  });
+
   describe("when passed password doesn't match stored password", () => {
     const req = {
       body: {
@@ -174,7 +262,7 @@ describe("/user/login", () => {
       await loginUser(req, res, next);
       const json = res.json.mock.calls[0][0];
 
-      expect(json.error.message).toBe("Incorrect password");
+      expect(json.error).toBe("Incorrect password");
     });
   });
 
