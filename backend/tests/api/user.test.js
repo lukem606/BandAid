@@ -1,8 +1,8 @@
 const bcrypt = require("bcryptjs");
 
-const { registerUser, loginUser } = require("../../api/user");
+const { registerUser, loginUser } = require("../../api/users");
 
-describe("/user/register", () => {
+describe("/users/register", () => {
   describe("when passed valid user credentials", () => {
     const req = {
       body: {
@@ -136,7 +136,7 @@ describe("/user/register", () => {
   });
 });
 
-describe("/user/login", () => {
+describe("/users/login", () => {
   describe("when user logs in correctly", () => {
     const req = {
       body: {

@@ -45,3 +45,8 @@ _14/1/22_
 - Tests finished for middleware/userAuthentication
 - Tests added for utils/getEncryptionKeys and utils/jwToken
 - utils/getEncryptionKeys and utils/jwToken completed
+
+_20/1/22_
+
+- Tests corrected for middleware/userAuthentication
+- middleware/userAuthentication completed

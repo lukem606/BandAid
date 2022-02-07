@@ -3,7 +3,7 @@ const fs = require("fs");
 const getPublicKey = () => {
   try {
     publicKey = fs.readFileSync("./public.key");
-    return publicKey.toString();
+    return publicKey;
   } catch (e) {
     return e;
   }
@@ -12,7 +12,7 @@ const getPublicKey = () => {
 const getPrivateKey = () => {
   try {
     privateKey = fs.readFileSync("./private.key");
-    return privateKey.toString();
+    return privateKey;
   } catch (e) {
     return e;
   }

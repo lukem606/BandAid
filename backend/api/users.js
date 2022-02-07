@@ -54,7 +54,7 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-const generateJWT = (req, res) => {
+const generateTokens = (req, res) => {
   res
     .set({
       "access-token": "token",
@@ -66,8 +66,4 @@ const generateJWT = (req, res) => {
 userRouter.post("/register", registerValidation, registerUser, generateJWT);
 userRouter.post("/login", loginValidation, loginUser, generateJWT);
 
-module.exports = {
-  userRouter: userRouter,
-  registerUser: registerUser,
-  loginUser: loginUser,
-};
+module.exports = { userRouter, registerUser, loginUser };

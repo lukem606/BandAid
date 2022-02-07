@@ -8,32 +8,31 @@ const generateAsymmetricKey = () => {
       modulusLength: 2048,
       publicExponent: 0x10101,
       publicKeyEncoding: {
-        type: "pkcs1",
-        format: "der",
+        type: "spki",
+        format: "pem",
       },
       privateKeyEncoding: {
         type: "pkcs8",
-        format: "der",
+        format: "pem",
       },
     },
     (error, publicKey, privateKey) => {
       if (!error) {
-        fs.writeFile("./public.key", publicKey.toString("hex"), (err) => {
-          if (error) {
-            console.log(error);
-          }
-        });
-
-        fs.writeFile("./private.key", privateKey.toString("hex"), (err) => {
-          if (error) {
-            console.log(error);
-          }
-        });
+        writeKeyToFile(privateKey, "private");
+        writeKeyToFile(publicKey, "public");
       } else {
         console.log(error);
       }
     }
   );
+};
+
+const writeKeyToFile = (key, fileName) => {
+  fs.writeFile(`./${fileName}.key`, key, (error) => {
+    if (error) {
+      console.log(error);
+    }
+  });
 };
 
 generateAsymmetricKey();

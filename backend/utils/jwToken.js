@@ -5,8 +5,12 @@ const publicKey = getPublicKey();
 const privateKey = getPrivateKey();
 
 const generateAccessToken = (payload) => {
+  if (payload.hasOwnProperty("exp")) {
+    delete payload.exp;
+  }
+
   const accessToken = jwt.sign(payload, privateKey, {
-    algorithm: "HS256",
+    algorithm: "RS256",
     expiresIn: 60 * 5,
   });
 
@@ -14,8 +18,12 @@ const generateAccessToken = (payload) => {
 };
 
 const generateRefreshToken = (payload) => {
+  if (payload.hasOwnProperty("exp")) {
+    delete payload.exp;
+  }
+
   const refreshToken = jwt.sign(payload, privateKey, {
-    algorithm: "HS256",
+    algorithm: "RS256",
     expiresIn: 60 * 60 * 24 * 14,
   });
 
@@ -24,7 +32,7 @@ const generateRefreshToken = (payload) => {
 
 const verifyToken = (token) => {
   try {
-    return jwt.verify(token, privateKey);
+    return jwt.verify(token, publicKey, { algorithm: "RS256" });
   } catch (error) {
     return error;
   }
